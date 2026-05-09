@@ -1,0 +1,295 @@
+[
+    {
+        "id": "254775b4f005ecf3",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "af6ebfe7cf2252db",
+        "type": "mqtt-broker",
+        "name": "mosq",
+        "broker": "mosquitto",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "mqtt_broker",
+        "type": "mqtt-broker",
+        "name": "mosq",
+        "broker": "mosquitto",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "9b962a71cea699e6",
+        "type": "mqtt-broker",
+        "name": "new mosq",
+        "broker": "mosquitto",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "mqtt_in_joystick",
+        "type": "mqtt in",
+        "z": "254775b4f005ecf3",
+        "name": "Joystick In",
+        "topic": "sensor/joystick",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "mqtt_broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 380,
+        "y": 500,
+        "wires": [
+            [
+                "f1"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_in_buttons",
+        "type": "mqtt in",
+        "z": "254775b4f005ecf3",
+        "name": "Buttons In",
+        "topic": "sensor/buttons",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "mqtt_broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 380,
+        "y": 560,
+        "wires": [
+            [
+                "f1b"
+            ]
+        ]
+    },
+    {
+        "id": "f1",
+        "type": "function",
+        "z": "254775b4f005ecf3",
+        "name": "Validate Joystick",
+        "func": "try {\n    let p = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n\n    if (typeof p.x === 'number' && typeof p.y === 'number' &&\n        p.x >= -1 && p.x <= 1 && p.y >= -1 && p.y <= 1) {\n\n        // Rond af naar 2 decimalen\n        p.x = Number(p.x.toFixed(2));\n        p.y = Number(p.y.toFixed(2));\n\n        msg.payload = p;\n        return msg;\n    }\n} catch (e) {}\n\nreturn null;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 500,
+        "wires": [
+            [
+                "debug_joystick",
+                "fmtj"
+            ]
+        ]
+    },
+    {
+        "id": "f1b",
+        "type": "function",
+        "z": "254775b4f005ecf3",
+        "name": "Validate Buttons",
+        "func": "try {\n    var p = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n    if (typeof p.button1 === 'boolean' && typeof p.button2 === 'boolean') {\n        msg.payload = p;\n        return msg;\n    }\n} catch(e) {}\nreturn null;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 560,
+        "wires": [
+            [
+                "debug_buttons",
+                "fmtb"
+            ]
+        ]
+    },
+    {
+        "id": "fmtj",
+        "type": "function",
+        "z": "254775b4f005ecf3",
+        "name": "Format Joystick for Influx",
+        "func": "// msg.payload = {x:..., y:...}\ntry {\n    var p = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n    var line = `joystick x=${p.x},y=${p.y}`;\n    msg.payload = line;\n    msg.headers = { 'Content-Type': 'text/plain', 'Authorization': 'Token supersecrettoken' };\n    msg.url = 'http://influxdb:8086/api/v2/write?org=mineorg&bucket=sensordata&precision=s';\n    return msg;\n} catch(e) {\n    return null;\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 120,
+        "wires": [
+            [
+                "httpr_j"
+            ]
+        ]
+    },
+    {
+        "id": "fmtb",
+        "type": "function",
+        "z": "254775b4f005ecf3",
+        "name": "Format Buttons for Influx",
+        "func": "// msg.payload = {button1: true/false, button2: true/false}\ntry {\n    var p = (typeof msg.payload === 'string') ? JSON.parse(msg.payload) : msg.payload;\n    var b1 = p.button1 ? 1 : 0;\n    var b2 = p.button2 ? 1 : 0;\n    var line = `buttons b1=${b1},b2=${b2}`;\n    msg.payload = line;\n    msg.headers = { 'Content-Type': 'text/plain', 'Authorization': 'Token supersecrettoken' };\n    msg.url = 'http://influxdb:8086/api/v2/write?org=mineorg&bucket=sensordata&precision=s';\n    return msg;\n} catch(e) {\n    return null;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 200,
+        "wires": [
+            [
+                "httpr_b"
+            ]
+        ]
+    },
+    {
+        "id": "httpr_j",
+        "type": "http request",
+        "z": "254775b4f005ecf3",
+        "name": "Write Joystick to Influx",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://influxdb:8086/api/v2/write?org=mineorg&bucket=sensordata&precision=s",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 980,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "httpr_b",
+        "type": "http request",
+        "z": "254775b4f005ecf3",
+        "name": "Write Buttons to Influx",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://influxdb:8086/api/v2/write?org=mineorg&bucket=sensordata&precision=s",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 980,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "debug_joystick",
+        "type": "debug",
+        "z": "254775b4f005ecf3",
+        "name": "Joystick Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "debug_buttons",
+        "type": "debug",
+        "z": "254775b4f005ecf3",
+        "name": "Buttons Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 820,
+        "y": 560,
+        "wires": []
+    }
+]

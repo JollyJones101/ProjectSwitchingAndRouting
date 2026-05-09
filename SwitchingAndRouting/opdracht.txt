@@ -1,0 +1,69 @@
+Smart Sensor Gateway met monitoring en automatisatie
+Situering
+Je werkt als embedded/cloud engineer bij een bedrijf dat industriële sensoren in het veld uitleest. Het bedrijf wil lokaal een edge-systeem opzetten dat sensorwaarden verzamelt, verwerkt, opslaat, visualiseert en centraal beheerd kan worden. Jouw opdracht is het bouwen van een containergebaseerde gatewayarchitectuur waarin je de belangrijkste cloud computing-concepten toepast die in de lessen zijn behandeld.
+
+Doelstelling
+Je bouwt een systeem dat data van een sensor (fysiek of gesimuleerd) ontvangt via MQTT, verwerkt met Node-RED, opslaat in een databank en visualiseert in een dashboard. Het volledige systeem wordt opgezet in containers, beheerd met Portainer. Je werkt in groep aan een project van voldoende technische diepgang, dat toont dat je cloudcomponenten kan combineren, configureren, beveiligen en beheren.
+
+ 
+Technische vereisten
+DONE
+1. Sensorcommunicatie (MQTT)   
+•	Sensorwaarden worden via MQTT gepubliceerd naar een lokale broker (bv. Mosquitto).
+•	Er zijn minstens twee topics actief (bijvoorbeeld knoppen en joysticks op een controller).
+DONE
+2. Verwerking van data (Node-RED)
+•	Node-RED leest de MQTT-data in en verwerkt ze.
+•	Je gebruikt minstens één zelfgeschreven function node waarin je datalogica implementeert (validatie, herberekening of filteren).
+•	Enkel correcte metingen worden doorgestuurd naar de databank.
+DONE
+3. Opslag en visualisatie
+De meetgegevens worden opgeslagen in een tijdreeksdatabase (InfluxDB). Je maakt een dashboard aan dat minstens de volgende elementen bevat:
+•	Live weergave van de joystick- en knopwaarden.
+•	Gemiddelde waarden over 1 uur en over 24 uur.
+DONE
+4. Containerisatie en netwerkarchitectuur 
+Het volledige systeem draait in Docker containers die beheerd worden met Docker Compose. De containers communiceren binnen een eigen netwerk. Je voorziet:
+•	Een Docker Compose-bestand dat de volledige stack opstart.
+DONE
+5. Monitoring en beheer
+•	Portainer toont de status van alle draaiende services.
+•	Eventueel voeg je eenvoudige logging of foutdetectie toe in Node-RED of via shellscripts.
+•	Het influxDB dashboard geeft een live weergave van de joystick- en knopwaarden
+ DONE
+6. Automatisatie (Docker-compose) 
+Je schrijft een docker-compose waarmee het systeem automatisch uitgerold wordt op een (virtuele) Linux-machine. Deze compose orchestreert minimaal:
+•	De nodige images of configuratiebestanden
+•	De hele stack (MQTT, Node-RED, InfluxDB, Portainer, ...)
+
+7. Continuous Integration / Continuous Deployment (CI/CD) 
+Je demonstreert de principes van CI/CD in de context van dit project. Je hoeft geen volledige GitHub Actions pipeline op te zetten, maar toont dat je infrastructuur en services automatisch kunnen worden bijgewerkt bij wijzigingen. Minimaal verwacht:
+•	Een shellscript of Makefile dat automatisch:
+o	de juiste containers bouwt,
+o	oude containers stopt,
+o	en de nieuwe stack opnieuw opstart via Docker Compose.
+•	Een korte toelichting in je documentatie over hoe je dit gebruikt of zou automatiseren in een echte pipeline.
+•	(Optioneel) Gebruik van watchtower of vergelijkbare tool voor automatische updates.
+
+Verwachte output 
+Je levert het volledige werkend systeem aan, samen met:
+•	Technische documentatie (markdown) waarin je de architectuur, installatie en werking toelicht.
+•	Een werkende docker-compose.
+•	CI/CD-script of procedure met korte uitleg.
+•	Screenshots of korte screencapture die de werking aantoont (optioneel).
+•	Versiebeheer via Git.
+
+Samenwerking 
+Je werkt in groep van 1 tot 3 studenten. Elk lid is mee verantwoordelijk voor de werking van het geheel. In het reflectiedocument vermeld je wie welke onderdelen voor zijn rekening nam.
+
+Tijdsinschatting
+Het project beslaat ongeveer 20 uur werk per student.
+
+Evaluatiecriteria
+•	Werking eindproject (architectuur, werking, stabiliteit): 40
+•	Integratie van Portainer: 10
+•	Dataverwerking met Node-RED en opslag: 10
+•	CI/CD-script of procedure: 10
+•	Duidelijke technische documentatie: 10
+•	Reflectie en samenwerking: 10
+•	Bonus (bijvoorbeeld automatische alerts, configuratietools, backup-script): +10

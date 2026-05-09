@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./docker/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - sensor-network
+
+  nodered:
+    image: nodered/node-red:latest
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./docker/nodered:/data
+    depends_on:
+      - mosquitto
+      - influxdb
+    networks:
+      - sensor-network
+
+  influxdb:
+    image: influxdb:2.7
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./docker/influxdb:/var/lib/influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN}
+    networks:
+      - sensor-network
+
+  sensor_sim:
+    build:
+      context: ./sensor-sim
+    image: sensor_sim:latest
+    restart: unless-stopped
+    environment:
+      - MQTT_BROKER=${MQTT_BROKER}
+      - MQTT_PORT=${MQTT_PORT}
+    depends_on:
+      - mosquitto
+    networks:
+      - sensor-network
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    restart: always
+    networks:
+      - sensor-network
+      - portainer-network
+
+  portainer_init:
+    image: curlimages/curl:latest
+    restart: "no"
+    depends_on:
+      - portainer
+    networks:
+      - portainer-network
+    environment:
+      - PORTAINER_USER=${PORTAINER_USER}
+      - PORTAINER_PASS=${PORTAINER_PASS}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        echo 'Waiting for Portainer...'
+        until curl -sf http://portainer:9000/api/system/status > /dev/null; do
+          echo 'Not ready yet...'; sleep 3
+        done
+        echo 'Portainer up, waiting 5s...'
+        sleep 5
+        printf '{"Username":"%s","Password":"%s"}' "$PORTAINER_USER" "$PORTAINER_PASS" > /tmp/payload.json
+        BODY=$(curl -s -X POST \
+          http://portainer:9000/api/users/admin/init \
+          -H 'Content-Type: application/json' \
+          -d @/tmp/payload.json)
+        if echo "$BODY" | grep -q '"Id"'; then
+          echo 'Admin account created successfully.'
+        else
+          echo 'Admin account already exists, skipping.'
+        fi
+
+  influxdb_init:
+    image: influxdb:2.7
+    restart: "no"
+    depends_on:
+      - influxdb
+    volumes:
+      - ./docker/influxdb:/data:ro
+    networks:
+      - sensor-network
+    environment:
+      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+      - INFLUXDB_ORG=${INFLUXDB_ORG}
+    entrypoint: sh -c "until influx ping --host http://influxdb:8086 > /dev/null 2>&1; do echo 'Waiting for InfluxDB...'; sleep 2; done; echo 'Importing dashboard...'; influx apply --force yes --host http://influxdb:8086 --token $INFLUXDB_TOKEN --org $INFLUXDB_ORG -f /data/sensor_dashboard.yaml && echo 'Dashboard imported successfully.' || echo 'Import failed.'"
+
+networks:
+  sensor-network:
+    driver: bridge
+
+  portainer-network:
+    driver: bridge
+
+volumes:
+  portainer_data:
