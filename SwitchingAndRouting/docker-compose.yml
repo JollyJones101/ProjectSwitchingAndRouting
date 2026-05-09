@@ -85,12 +85,12 @@ services:
         done
         echo 'Portainer up, waiting 5s...'
         sleep 5
-        printf '{"Username":"%s","Password":"%s"}' "$PORTAINER_USER" "$PORTAINER_PASS" > /tmp/payload.json
-        BODY=$(curl -s -X POST \
+        printf '{"Username":"%s","Password":"%s"}' "$$PORTAINER_USER" "$$PORTAINER_PASS" > /tmp/payload.json
+        BODY=$$(curl -s -X POST \
           http://portainer:9000/api/users/admin/init \
           -H 'Content-Type: application/json' \
           -d @/tmp/payload.json)
-        if echo "$BODY" | grep -q '"Id"'; then
+        if echo "$$BODY" | grep -q '"Id"'; then
           echo 'Admin account created successfully.'
         else
           echo 'Admin account already exists, skipping.'
@@ -108,7 +108,7 @@ services:
     environment:
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
       - INFLUXDB_ORG=${INFLUXDB_ORG}
-    entrypoint: sh -c "until influx ping --host http://influxdb:8086 > /dev/null 2>&1; do echo 'Waiting for InfluxDB...'; sleep 2; done; echo 'Importing dashboard...'; influx apply --force yes --host http://influxdb:8086 --token $INFLUXDB_TOKEN --org $INFLUXDB_ORG -f /data/sensor_dashboard.yaml && echo 'Dashboard imported successfully.' || echo 'Import failed.'"
+    entrypoint: sh -c "until influx ping --host http://influxdb:8086 > /dev/null 2>&1; do echo 'Waiting for InfluxDB...'; sleep 2; done; echo 'Importing dashboard...'; influx apply --force yes --host http://influxdb:8086 --token $$INFLUXDB_TOKEN --org $$INFLUXDB_ORG -f /data/sensor_dashboard.yaml && echo 'Dashboard imported successfully.' || echo 'Import failed.'"
 
 networks:
   sensor-network:
