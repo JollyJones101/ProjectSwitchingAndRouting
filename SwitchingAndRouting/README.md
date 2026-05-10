@@ -17,15 +17,17 @@ This project implements a container-based sensor gateway system that collects da
 
 ## Usage
 - Access Node-RED at http://localhost:1880
-- Access Portainer at http://localhost:9000 (once added)
-- Sensor simulation can be run from the sensor-sim folder.
+- Access Portainer at http://localhost:9000 
 
 ## Development
-- Start with basic MQTT and Node-RED setup.
-- Gradually add InfluxDB, monitoring, and automation.
+
 
 ## Team
-- [Your name]: Responsible for [components]
-
-## TODO
-See session memory for detailed todo list.
+Jamie Jones
+## Deployment
+I have also setup a proxmox server at home on which I have setup a VM with ubuntu-24.04.4-live-server-amd64.iso on this VM I installed docker and docker-compose.
+As you can see in the screenshots below, we are able to acces all our Containers form my Local Network.
+![Proxmox](image.png)
+![InfluxDB](image-1.png)
+![NodeRed](image-2.png)
+![Portainer](image-3.png)
