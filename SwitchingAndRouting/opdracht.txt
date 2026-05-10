@@ -35,7 +35,7 @@ DONE
 Je schrijft een docker-compose waarmee het systeem automatisch uitgerold wordt op een (virtuele) Linux-machine. Deze compose orchestreert minimaal:
 •	De nodige images of configuratiebestanden
 •	De hele stack (MQTT, Node-RED, InfluxDB, Portainer, ...)
-
+DONE (Untested)
 7. Continuous Integration / Continuous Deployment (CI/CD) 
 Je demonstreert de principes van CI/CD in de context van dit project. Je hoeft geen volledige GitHub Actions pipeline op te zetten, maar toont dat je infrastructuur en services automatisch kunnen worden bijgewerkt bij wijzigingen. Minimaal verwacht:
 •	Een shellscript of Makefile dat automatisch:

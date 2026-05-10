@@ -13,14 +13,48 @@ This project implements a container-based sensor gateway system that collects da
 ## Installation
 1. Ensure Docker and Docker Compose are installed.
 2. Clone this repository.
-3. Run `docker-compose up -d` to start the services.
+3. Run `docker-compose up -d --build` to start the services.
 
 ## Usage
 - Access Node-RED at http://localhost:1880
 - Access Portainer at http://localhost:9000 
 
-## Development
+## Full startup
+Maak linux VM
+![CreateVM](image-4.png)
+Run through setup, we enable ssh for convience
+![Setup](image-5.png)
+![Complete](image-6.png)
+![Reboot](image-7.png)
+Complete the setup and reboot
+![ssh](image-8.png)
+Ssh for ease of use.
+Afterwords install docker:
 
+sudo apt update
+sudo apt install -y ca-certificates curl gnupg
+
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo $VERSION_CODENAME) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo systemctl enable docker
+sudo systemctl start docker
+
+![Clone](image-9.png)
+Clone the repo: git clone https://github.com/JollyJones101/ProjectSwitchingAndRouting.git
+Go into the dir: cd ProjectSwitchingAndRouting/SwitchingAndRouting
+Create an .env file 
+Install make: sudo apt install make
+Run: sudo make build or docker-compose up
 
 ## Team
 Jamie Jones
