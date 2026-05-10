@@ -2,7 +2,7 @@
 
 ## Overview
 This project implements a container-based sensor gateway system that collects data from sensors via MQTT, processes it with Node-RED, stores it in a database, and provides visualization through dashboards. The system is managed using Docker Compose and Portainer.
-
+##BELANGRIJK!!!, IK HEB DE MAKE FILE PROBEREN RUNNEN OP VM EN NU WERKT MIJN PROXMOX COMPUTER NIET! dit kan zijn daar A oude slechte pc met hardware issues dat ik all had of iets anders. ik had well mijn env file vergeten maken toen ik het opstarte.... 
 ## Architecture
 - **MQTT Broker (Mosquitto)**: Handles sensor data publishing
 - **Node-RED**: Processes and routes sensor data
