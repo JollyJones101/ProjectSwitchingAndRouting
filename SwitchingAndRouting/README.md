@@ -21,13 +21,13 @@ This project implements a container-based sensor gateway system that collects da
 
 ## Full startup
 Maak linux VM
-![CreateVM](image-4.png)
+![CreateVM](Documentation/image-4.png)
 Run through setup, we enable ssh for convience
-![Setup](image-5.png)
-![Complete](image-6.png)
-![Reboot](image-7.png)
+![Setup](Documentation/image-5.png)
+![Complete](Documentation/image-6.png)
+![Reboot](Documentation/image-7.png)
 Complete the setup and reboot
-![ssh](image-8.png)
+![ssh](Documentation/image-8.png)
 Ssh for ease of use.
 Afterwords install docker:
 
@@ -49,7 +49,12 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin d
 sudo systemctl enable docker
 sudo systemctl start docker
 
-![Clone](image-9.png)
+![Proxmox](Documentation/image.png)
+![InfluxDB](Documentation/image-1.png)
+![NodeRed](Documentation/image-2.png)
+![Portainer](Documentation/image-3.png)
+
+![Clone](Documentation/image-9.png)
 Clone the repo: git clone https://github.com/JollyJones101/ProjectSwitchingAndRouting.git
 Go into the dir: cd ProjectSwitchingAndRouting/SwitchingAndRouting
 Create an .env file 
@@ -61,7 +66,3 @@ Jamie Jones
 ## Deployment
 I have also setup a proxmox server at home on which I have setup a VM with ubuntu-24.04.4-live-server-amd64.iso on this VM I installed docker and docker-compose.
 As you can see in the screenshots below, we are able to acces all our Containers form my Local Network.
-![Proxmox](image.png)
-![InfluxDB](image-1.png)
-![NodeRed](image-2.png)
-![Portainer](image-3.png)
