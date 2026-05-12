@@ -4,7 +4,7 @@
 **Auteur:** Jamie Jones | **Datum:** 2026
 
 ## Inhoudsopgave
-1. [Overzicht](#overzicht) | 2. [Architectuur](#architectuur) | 3. [Componenten](#componenten) | 4. [Installatie](#installatie) | 5. [Configuratie](#configuratie) | 6. [Monitoring](#monitoring) | 7. [Deployment](#deployment) | 8. [Troubleshooting](#troubleshooting)
+1. [Overzicht](#overzicht) | 2. [Architectuur](#architectuur) | 3. [Componenten](#componenten) | 4. [Installatie](#installatie)
 
 ---
 
