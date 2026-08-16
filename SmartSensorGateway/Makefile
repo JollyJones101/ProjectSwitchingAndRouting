@@ -17,7 +17,7 @@ down:
 
 .PHONY: up
 up:
-	$(COMPOSE) up -d
+	$(COMPOSE) --env-file .env up -d --build
 
 .PHONY: rebuild
 rebuild:
