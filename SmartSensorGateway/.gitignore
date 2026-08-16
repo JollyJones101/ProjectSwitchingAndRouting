@@ -4,5 +4,6 @@ __pycache__/
 *.pyc
 
 # Editor
+.env
 .vscode/
 .DS_Store

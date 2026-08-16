@@ -33,11 +33,15 @@ portainer  <-- manages all of the above via the Docker socket
 
 ## Prerequisites
 - Docker and Docker Compose v2 installed
-- Ports listed under **Quick start** below free on your host (or adjust them in `.env`)
+- Ports listed under **Quick start** below free on your host (or adjust them in `.env`)yay werkt deze keer :)
 
 ## Quick start
+
+Download docker: curl -fsSL https://get.docker.com | sh
+
+0. git clone https://github.com/JollyJones101/ProjectSwitchingAndRouting.git
 1. Go to the project folder.
-2. Verify the `.env` file (copy `.env.example` if you don't have one yet, and fill in your own values — see **Security note** below).
+2. Make `.env` file (copy `exampleEnv` if you don't have one yet, and fill in your own values — see **Security note** below).
 3. Run:
 
 ```bash
