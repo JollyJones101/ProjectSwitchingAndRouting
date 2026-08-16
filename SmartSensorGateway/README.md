@@ -41,16 +41,18 @@ Download docker: curl -fsSL https://get.docker.com | sh
 
 0. git clone https://github.com/JollyJones101/ProjectSwitchingAndRouting.git
 1. Go to the project folder.
-2. Make `.env` file (copy `exampleEnv` if you don't have one yet, and fill in your own values — see **Security note** below).
+2. Make `.env` file (copy `exampleEnv` and fill in your own values — see **Security note** below).
 3. Run:
 
 ```bash
-docker compose --env-file .env up -d --build
+docker compose --env-file .env up -d --build | of met sudo als je issues hebt
 ```
-
+![alt text](Images/image.png)
 4. Open the following endpoints (see `.env` for current port mappings):
    - Node-RED: http://localhost:1880
+   ![alt text](Images/red.png)
    - Portainer: http://localhost:9000
+   ![alt text](Images/port.png)
    - InfluxDB: http://localhost:8086
    - Mosquitto MQTT: localhost:1883
    - Mosquitto WebSocket: http://localhost:9001
