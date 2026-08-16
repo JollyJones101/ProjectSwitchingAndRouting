@@ -1,0 +1,8 @@
+# Docker/local
+.env.local
+__pycache__/
+*.pyc
+
+# Editor
+.vscode/
+.DS_Store

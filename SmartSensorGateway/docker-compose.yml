@@ -1,0 +1,142 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mosquitto
+    ports:
+      - "${MQTT_HOST_PORT}:${MQTT_PORT}"
+      - "${MQTT_WS_HOST_PORT}:${MQTT_WS_PORT}"
+    volumes:
+      - ./docker/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+    networks:
+      - sensor-net
+
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb
+    ports:
+      - "${INFLUXDB_HOST_PORT}:${INFLUXDB_PORT}"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:${INFLUXDB_PORT}/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    networks:
+      - sensor-net
+
+  influxdb_init:
+    image: influxdb:2.7
+    container_name: influxdb_init
+    restart: "no"
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    volumes:
+      - ./docker/influxdb:/data:ro
+    networks:
+      - sensor-net
+    environment:
+      INFLUXDB_TOKEN: ${INFLUXDB_TOKEN}
+      INFLUXDB_ORG: ${INFLUXDB_ORG}
+      INFLUXDB_PORT: ${INFLUXDB_PORT}
+      INFLUXDB_BUCKET: ${INFLUXDB_BUCKET}
+    entrypoint: ["sh", "/data/apply_dashboard.sh"]
+
+  nodered:
+    image: nodered/node-red:latest
+    container_name: nodered
+    env_file:
+      - ./.env
+    ports:
+      - "${NODERED_HOST_PORT}:${NODERED_PORT}"
+    environment:
+      TZ: Europe/Amsterdam
+      MQTT_BROKER: ${MQTT_BROKER}
+      MQTT_PORT: ${MQTT_PORT}
+      INFLUXDB_HOST: ${INFLUXDB_HOST}
+      INFLUXDB_PORT: ${INFLUXDB_PORT}
+      INFLUXDB_ORG: ${INFLUXDB_ORG}
+      INFLUXDB_BUCKET: ${INFLUXDB_BUCKET}
+      INFLUXDB_TOKEN: ${INFLUXDB_TOKEN}
+    volumes:
+      - ./docker/nodered:/data
+    depends_on:
+      mosquitto:
+        condition: service_started
+      influxdb:
+        condition: service_healthy
+      influxdb_init:
+        condition: service_completed_successfully
+    networks:
+      - sensor-net
+
+  sensor_sim:
+    build:
+      context: ./sensor-sim
+    image: sensor-sim:latest
+    container_name: sensor-sim
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    environment:
+      MQTT_BROKER: ${MQTT_BROKER}
+      MQTT_PORT: ${MQTT_PORT}
+      TOPIC_JOYSTICK: ${TOPIC_JOYSTICK}
+      TOPIC_BUTTONS: ${TOPIC_BUTTONS}
+    depends_on:
+      - mosquitto
+    networks:
+      - sensor-net
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    command: ["--admin-password-file", "/run/secrets/portainer/admin_password"]
+    ports:
+      - "${PORTAINER_HOST_PORT}:${PORTAINER_PORT}"
+      - "${PORTAINER_SSL_HOST_PORT}:${PORTAINER_SSL_PORT}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+      - portainer_password:/run/secrets/portainer:ro
+    depends_on:
+      portainer_password_init:
+        condition: service_completed_successfully
+    restart: always
+    networks:
+      - sensor-net
+
+  portainer_password_init:
+    image: alpine:latest
+    container_name: portainer_password_init
+    restart: "no"
+    environment:
+      - PORTAINER_PASS=${PORTAINER_PASS}
+    volumes:
+      - portainer_password:/secrets
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        printf '%s' "$$PORTAINER_PASS" > /secrets/admin_password
+        echo 'Admin password file written.'
+
+networks:
+  sensor-net:
+    driver: bridge
+
+volumes:
+  mosquitto_data:
+  influxdb_data:
+  portainer_data:
+  portainer_password:
